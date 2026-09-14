@@ -19,31 +19,31 @@ dist = [
 lint = [{ include-group = "pre-commit" }]
 pre-commit = ["prek==0.5.2"]
 test = ["pytest==9.1.1"]
-types = ["mypy==2.3.1", "ty==0.0.80"]
+types = ["mypy==2.3.1", "ty==0.0.80", "types-lxml==2026.2.16"]
 
 [project]
 authors = [{ email = "michal@weblate.org", name = "Michal Čihař" }]
 classifiers = [
-  "Development Status :: 1 - Planning",
+  "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
   "Operating System :: OS Independent",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
   "Topic :: Software Development :: Internationalization",
   "Topic :: Software Development :: Localization"
 ]
+dependencies = ["lxml>=6.1.3"]
 description = "A pure-Python library for generating Android resource tables (ARSC) with support for strings, plurals, and styled text."
 keywords = ["android", "arsc", "i18n", "l10n", "weblate"]
 license = "MIT"
 license-files = ["LICENSE", "LICENSES/*.txt"]
 name = "arsc-writer"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 version = "0.1.0.dev0"
 
 [project.urls]
@@ -60,6 +60,7 @@ ignore = [
   ".pre-commit-config.yaml",
   ".yamllint.yml",
   "AGENTS.md",
+  "ci/**",
   # uv_build preserves the original when rewriting the sdist's TOML.
   "pyproject.toml.orig",
   "REUSE.toml",
@@ -68,7 +69,7 @@ ignore = [
 
 [tool.mypy]
 files = ["src", "tests"]
-python_version = "3.11"
+python_version = "3.12"
 strict = true
 
 [tool.pytest.ini_options]
@@ -94,7 +95,13 @@ min-file-size = 2
 notice-rgx = "(?i)Copyright\\s+©\\s+"
 
 [tool.ruff.lint.per-file-ignores]
+# The fixture generator is a standalone script, not an import package.
+"ci/android-arsc/*.py" = ["implicit-namespace-package"]
+# Binary-format widths and sentinels are kept beside their encodings.
+"src/arsc_writer/writer.py" = ["magic-value-comparison"]
 "tests/**" = ["assert", "implicit-namespace-package"]
+# AAPT2 is explicitly supplied by the developer or CI, never resource input.
+"tests/test_writer.py" = ["subprocess-without-shell-equals-true"]
 
 [tool.rumdl]
 disable = ["first-line-heading", "line-length"]

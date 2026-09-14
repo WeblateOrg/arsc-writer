@@ -18,22 +18,17 @@ jobs:
         - macos-15
         artifact: ['*.whl']
         python-version:
-        - '3.11'
         - '3.12'
         - '3.13'
         - '3.14'
         exclude:
-        - os: windows-2025
-          python-version: '3.12'
-        - os: macos-15
-          python-version: '3.12'
         - os: windows-2025
           python-version: '3.13'
         - os: macos-15
           python-version: '3.13'
         include:
         - os: ubuntu-24.04
-          python-version: '3.11'
+          python-version: '3.12'
           artifact: '*.tar.gz'
         - os: ubuntu-24.04
           python-version: '3.14'
@@ -57,12 +52,12 @@ jobs:
         name: dist
         path: dist
     - name: Install test tools
-      run: uv sync --locked --only-group test
+      run: uv sync --locked --no-default-groups --group test --no-install-project
     - name: Install distribution
       shell: bash
       env:
         ARTIFACT: ${{ matrix.artifact }}
-      run: uv pip install --no-deps "dist/$ARTIFACT"
+      run: uv pip install --no-deps dist/$ARTIFACT
     - name: Test installed distribution
       working-directory: ${{ runner.temp }}
       shell: bash

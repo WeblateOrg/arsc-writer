@@ -6,9 +6,8 @@ name: Distribution
 
 on:
   push:
-    branches-ignore:
-    - renovate/**
-    - dependabot/**
+    branches:
+    - main
     tags:
     - '*'
   pull_request:
@@ -73,6 +72,12 @@ jobs:
     - setup
     uses: $/.github/workflows/test.yml
 
+  android:
+    name: Verify Android compatibility
+    needs:
+    - setup
+    uses: $/.github/workflows/android.yml
+
   release_pypi:
     if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags') && github.repository == 'WeblateOrg/arsc-writer'
     runs-on: ubuntu-24.04
@@ -83,6 +88,7 @@ jobs:
     needs:
     - setup
     - test
+    - android
     steps:
     - uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
       with:
@@ -103,6 +109,7 @@ jobs:
     needs:
     - setup
     - test
+    - android
     if: startsWith(github.ref, 'refs/tags/')  && github.repository == 'WeblateOrg/arsc-writer'
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
