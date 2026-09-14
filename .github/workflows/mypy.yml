@@ -34,7 +34,7 @@ jobs:
       with:
         python-version: '3.14'
     - name: Install pip dependencies
-      run: uv sync --locked --only-group types --group test
+      run: uv sync --locked --no-default-groups --group types --group test
     - name: Run mypy
       run: |
         echo "::add-matcher::.github/matchers/mypy.json"
@@ -57,6 +57,6 @@ jobs:
       with:
         python-version: '3.14'
     - name: Install pip dependencies
-      run: uv sync --locked --only-group types --group test
+      run: uv sync --locked --no-default-groups --group types --group test
     - name: Run ty
       run: uv run --locked --no-sync ty check --output-format=github
