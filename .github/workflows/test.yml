@@ -16,7 +16,7 @@ jobs:
         - ubuntu-24.04
         - windows-2025
         - macos-15
-        artifact: ['*.whl']
+        artifact: [whl]
         python-version:
         - '3.12'
         - '3.13'
@@ -29,10 +29,10 @@ jobs:
         include:
         - os: ubuntu-24.04
           python-version: '3.12'
-          artifact: '*.tar.gz'
+          artifact: tar.gz
         - os: ubuntu-24.04
           python-version: '3.14'
-          artifact: '*.tar.gz'
+          artifact: tar.gz
     name: ${{ matrix.os }}, Python ${{ matrix.python-version }}, ${{ matrix.artifact }}
 
     steps:
@@ -57,7 +57,7 @@ jobs:
       shell: bash
       env:
         ARTIFACT: ${{ matrix.artifact }}
-      run: uv pip install --no-deps dist/$ARTIFACT
+      run: uv pip install --no-deps dist/*."$ARTIFACT"
     - name: Test installed distribution
       working-directory: ${{ runner.temp }}
       shell: bash
