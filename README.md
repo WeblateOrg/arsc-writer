@@ -80,8 +80,8 @@ Commit `uv.lock` to keep development and CI dependencies reproducible. After
 changing dependency requirements, run `uv lock` and include the updated lockfile
 in the change. Ruff is supplied by the pre-commit hook environment.
 
-CI tests the built wheel on supported Python versions and operating systems,
-and installs the source distribution separately on Python 3.12 and 3.14.
+CI tests the built wheel and source distribution using the
+[Python test matrix](.github/workflows/test.yml).
 These checks run outside the checkout, without an editable installation or
 `PYTHONPATH` override.
 
@@ -91,13 +91,16 @@ The Python suite runs without an Android SDK, skipping compiler comparisons
 unless `AAPT2` points to an executable:
 
 ```sh
-AAPT2="$ANDROID_HOME/build-tools/35.0.0/aapt2" uv run --locked pytest
+AAPT2="/path/to/android-sdk/build-tools/<version>/aapt2" uv run --locked pytest
 ```
 
 The instrumentation harness in `ci/android-arsc` verifies resource overrides,
 plurals, styled Unicode, fallback, and provider replacement with Android's
-`ResourcesLoader`. It requires Java 17, Gradle 8.7, Android SDK platform and
-build-tools 35, and a running API 30 or 36 emulator:
+`ResourcesLoader`. It requires Java, Gradle, the Android SDK platform and
+build-tools, and a running emulator. Use the tool versions and emulator matrix
+configured in the [Android workflow](.github/workflows/android.yml); the
+[Gradle build](ci/android-arsc/build.gradle) defines the Android plugin and SDK
+requirements:
 
 ```sh
 uv run --locked python ci/android-arsc/generate-fixtures.py
@@ -105,7 +108,7 @@ gradle -p ci/android-arsc --no-daemon assembleDebug assembleDebugAndroidTest
 gradle -p ci/android-arsc --no-daemon connectedDebugAndroidTest
 ```
 
-CI runs both emulator versions and AAPT2 comparisons against the built wheel,
+CI runs the configured emulator matrix and AAPT2 comparisons against the built wheel,
 then uploads instrumentation reports. The Android harness is repository-only;
 Python tests are included in the source distribution.
 
