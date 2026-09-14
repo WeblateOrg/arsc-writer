@@ -63,7 +63,7 @@ jobs:
       working-directory: ${{ runner.temp }}
       run: '"$GITHUB_WORKSPACE/.venv/bin/python" -I "$GITHUB_WORKSPACE/ci/android-arsc/generate-fixtures.py"'
     - name: Build instrumentation harness
-      run: gradle -p ci/android-arsc --no-daemon --stacktrace assembleDebug assembleDebugAndroidTest
+      run: gradle -p ci/android-arsc --no-daemon --stacktrace --warning-mode all assembleDebug assembleDebugAndroidTest
     - name: Enable KVM
       run: |
         echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -77,7 +77,7 @@ jobs:
         arch: x86_64
         disable-animations: true
         disable-linux-hw-accel: false
-        script: gradle -p ci/android-arsc --no-daemon --stacktrace connectedDebugAndroidTest
+        script: gradle -p ci/android-arsc --no-daemon --stacktrace --warning-mode all connectedDebugAndroidTest
     - name: Upload Android test reports
       if: ${{ !cancelled() }}
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -85,6 +85,7 @@ jobs:
         name: android-arsc-api-${{ matrix.api-level }}
         path: |
           ci/android-arsc/build/reports/androidTests/
+          ci/android-arsc/build/reports/problems/
           ci/android-arsc/build/outputs/androidTest-results/
           ci/android-arsc/build/generated/assets/
         retention-days: 14
