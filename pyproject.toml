@@ -1,0 +1,110 @@
+[build-system]
+build-backend = "uv_build"
+requires = ["uv_build>=0.12.13,<0.13"]
+
+[dependency-groups]
+dev = [
+  { include-group = "dist" },
+  { include-group = "lint" },
+  { include-group = "test" },
+  { include-group = "types" }
+]
+dist = [
+  "check-manifest==0.51",
+  "check-wheel-contents==0.6.3",
+  "pydistcheck==0.11.3",
+  "pyroma==5.0.1",
+  "twine==7.0.0"
+]
+lint = [{ include-group = "pre-commit" }]
+pre-commit = ["prek==0.5.2"]
+test = ["pytest==9.1.1"]
+types = ["mypy==2.3.1", "ty==0.0.80"]
+
+[project]
+authors = [{ email = "michal@weblate.org", name = "Michal Čihař" }]
+classifiers = [
+  "Development Status :: 1 - Planning",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Software Development :: Internationalization",
+  "Topic :: Software Development :: Localization"
+]
+description = "A pure-Python library for generating Android resource tables (ARSC) with support for strings, plurals, and styled text."
+keywords = ["android", "arsc", "i18n", "l10n", "weblate"]
+license = "MIT"
+license-files = ["LICENSE", "LICENSES/*.txt"]
+name = "arsc-writer"
+readme = "README.md"
+requires-python = ">=3.11"
+version = "0.1.0.dev0"
+
+[project.urls]
+Documentation = "https://github.com/WeblateOrg/arsc-writer#readme"
+Funding = "https://weblate.org/donate/"
+Homepage = "https://github.com/WeblateOrg/arsc-writer"
+"Issue Tracker" = "https://github.com/WeblateOrg/arsc-writer/issues"
+"Source Code" = "https://github.com/WeblateOrg/arsc-writer"
+
+[tool.check-manifest]
+ignore = [
+  ".editorconfig",
+  ".github/**",
+  ".pre-commit-config.yaml",
+  ".yamllint.yml",
+  "AGENTS.md",
+  # uv_build preserves the original when rewriting the sdist's TOML.
+  "pyproject.toml.orig",
+  "REUSE.toml",
+  "uv.lock"
+]
+
+[tool.mypy]
+files = ["src", "tests"]
+python_version = "3.11"
+strict = true
+
+[tool.pytest.ini_options]
+addopts = ["--import-mode=importlib"]
+testpaths = ["tests"]
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.ruff.lint]
+ignore = [
+  "COM",
+  "incorrect-blank-line-before-class",
+  "line-too-long",
+  "multi-line-summary-first-line",
+  "single-line-implicit-string-concatenation"
+]
+preview = true
+select = ["ALL"]
+
+[tool.ruff.lint.flake8-copyright]
+min-file-size = 2
+notice-rgx = "(?i)Copyright\\s+©\\s+"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["assert", "implicit-namespace-package"]
+
+[tool.rumdl]
+disable = ["first-line-heading", "line-length"]
+
+[tool.tomlsort]
+ignore_case = true
+sort_inline_arrays = true
+sort_inline_tables = true
+sort_table_keys = true
+spaces_before_inline_comment = 2
+
+[tool.uv.build-backend]
+source-include = ["CHANGES.md", "SECURITY.md", "tests/**"]
