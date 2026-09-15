@@ -24,7 +24,7 @@ Install the package into your Python environment:
     python -m pip install arsc-writer
 
 For development and documentation build instructions, see the
-`repository README <https://github.com/WeblateOrg/arsc-writer#development>`_.
+:doc:`development`.
 
 Quick start
 -----------
@@ -53,6 +53,7 @@ locale formats.
    :maxdepth: 2
 
    api
+   development
    changes
 
 * :ref:`genindex`
