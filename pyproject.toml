@@ -19,7 +19,7 @@ dist = [
 lint = [{ include-group = "pre-commit" }]
 pre-commit = ["prek==0.5.2"]
 test = ["pytest==9.1.1"]
-types = ["mypy==2.3.1", "ty==0.0.80", "types-lxml==2026.2.16"]
+types = ["mypy==2.3.1", "ty==0.0.81", "types-lxml==2026.2.16"]
 
 [project]
 authors = [{ email = "michal@weblate.org", name = "Michal Čihař" }]
