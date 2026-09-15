@@ -16,13 +16,25 @@ dist = [
   "pyroma==5.0.1",
   "twine==7.0.0"
 ]
-lint = [{ include-group = "pre-commit" }]
-pre-commit = ["prek==0.5.2"]
-test = ["pytest==9.1.1"]
-types = ["mypy==2.3.1", "ty==0.0.81", "types-lxml==2026.2.16"]
+lint = [
+  { include-group = "pre-commit" }
+]
+pre-commit = [
+  "prek==0.5.2"
+]
+test = [
+  "pytest==9.1.1"
+]
+types = [
+  "mypy==2.3.1",
+  "ty==0.0.81",
+  "types-lxml==2026.2.16"
+]
 
 [project]
-authors = [{ email = "michal@weblate.org", name = "Michal Čihař" }]
+authors = [
+  { email = "michal@weblate.org", name = "Michal Čihař" }
+]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
@@ -96,15 +108,27 @@ notice-rgx = "(?i)Copyright\\s+©\\s+"
 
 [tool.ruff.lint.per-file-ignores]
 # The fixture generator is a standalone script, not an import package.
-"ci/android-arsc/*.py" = ["implicit-namespace-package"]
+"ci/android-arsc/*.py" = [
+  "implicit-namespace-package"
+]
 # Binary-format widths and sentinels are kept beside their encodings.
-"src/arsc_writer/writer.py" = ["magic-value-comparison"]
-"tests/**" = ["assert", "implicit-namespace-package"]
+"src/arsc_writer/writer.py" = [
+  "magic-value-comparison"
+]
+"tests/**" = [
+  "assert",
+  "implicit-namespace-package"
+]
 # AAPT2 is explicitly supplied by the developer or CI, never resource input.
-"tests/test_writer.py" = ["subprocess-without-shell-equals-true"]
+"tests/test_writer.py" = [
+  "subprocess-without-shell-equals-true"
+]
 
 [tool.rumdl]
-disable = ["first-line-heading", "line-length"]
+disable = [
+  "first-line-heading",
+  "line-length"
+]
 
 [tool.tomlsort]
 ignore_case = true
