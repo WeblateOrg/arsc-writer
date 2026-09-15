@@ -19,7 +19,7 @@ dist = [
 ]
 docs = [
   "furo==2025.12.19",
-  "Sphinx==8.2.3"
+  "Sphinx==9.1.0"
 ]
 lint = [
   { include-group = "pre-commit" }
