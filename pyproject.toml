@@ -62,7 +62,7 @@ license-files = ["LICENSE", "LICENSES/*.txt"]
 name = "arsc-writer"
 readme = "README.md"
 requires-python = ">=3.12"
-version = "0.1.0.dev0"
+version = "0.1.0"
 
 [project.urls]
 Changelog = "https://arsc-writer.readthedocs.io/en/latest/changes.html"
