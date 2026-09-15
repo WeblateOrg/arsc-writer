@@ -122,7 +122,10 @@ waits for all Python distribution tests and Android verification to pass. Tags m
 `pyproject.toml`, optionally prefixed with `v`.
 
 Tags in `WeblateOrg/arsc-writer` also publish to PyPI and create GitHub
-releases with generated release notes. Before tagging a release, update the
+releases with notes from the matching [changelog](docs/changes.rst) section.
+Use the bare package version as the section heading, with a dashed underline,
+and include a nonempty description of the changes. Missing, duplicate, or empty
+release sections block publishing. Before tagging a release, update the
 version in `pyproject.toml` and the [changelog](docs/changes.rst), and configure a PyPI trusted
 publisher for owner `WeblateOrg`, repository `arsc-writer`, and workflow
 `setup.yml` without an environment name.
