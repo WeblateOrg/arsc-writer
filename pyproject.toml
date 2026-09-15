@@ -119,6 +119,12 @@ notice-rgx = "(?i)Copyright\\s+©\\s+"
 "ci/android-arsc/*.py" = [
   "implicit-namespace-package"
 ]
+# Release tooling is a standalone script invoking the installed Pandoc command.
+"ci/release_notes.py" = [
+  "implicit-namespace-package",
+  "start-process-with-partial-path",
+  "subprocess-without-shell-equals-true"
+]
 # Sphinx loads its configuration as a standalone module.
 "docs/conf.py" = [
   "implicit-namespace-package"
@@ -130,6 +136,10 @@ notice-rgx = "(?i)Copyright\\s+©\\s+"
 "tests/**" = [
   "assert",
   "implicit-namespace-package"
+]
+# Release tooling tests invoke the current Python interpreter.
+"tests/test_release_notes.py" = [
+  "subprocess-without-shell-equals-true"
 ]
 # AAPT2 is explicitly supplied by the developer or CI, never resource input.
 "tests/test_writer.py" = [
