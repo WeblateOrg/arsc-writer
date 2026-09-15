@@ -26,9 +26,9 @@ def main() -> None:
             },
         ),
     }
-    (output / "fr.arsc").write_bytes(generate(package, "fr", resources))
+    (output / "fr.arsc").write_bytes(generate(resources, package=package, locale="fr"))
     (output / "fr-updated.arsc").write_bytes(
-        generate(package, "fr", {0x7F090003: ("welcome", Text("Salut"))})
+        generate({0x7F090003: ("welcome", Text("Salut"))}, package=package, locale="fr")
     )
     for filename in ("fr.arsc", "fr-updated.arsc"):
         (output / f"{filename}.license").write_text(

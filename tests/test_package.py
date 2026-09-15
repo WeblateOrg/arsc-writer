@@ -27,6 +27,6 @@ def test_public_api() -> None:
     }
     value: arsc_writer.ResourceValue = arsc_writer.Text("Hello")
     assert isinstance(value, arsc_writer.Text)
-    assert arsc_writer.generate("org.example.app", "en", resources).startswith(
-        b"\x02\x00\x0c\x00"
-    )
+    assert arsc_writer.generate(
+        resources, package="org.example.app", locale="en"
+    ).startswith(b"\x02\x00\x0c\x00")
