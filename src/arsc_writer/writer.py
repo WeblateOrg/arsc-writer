@@ -41,9 +41,25 @@ ANDROID_WHITESPACE = " \t\n\r\f\v"
 
 @dataclass(frozen=True)
 class Text:
-    """Decoded text with style tags and inclusive UTF-16 span offsets."""
+    """
+    Immutable decoded text with optional Android style spans.
 
+    Args:
+        value: Already-decoded text, without Android escape or quote processing.
+        spans: Tuples of ``(tag, first, last)`` using UTF-16 code-unit offsets
+            and an inclusive last index. Supplementary characters use two units.
+            Spans may overlap or nest but must satisfy
+            ``0 <= first <= last < length``, where ``length`` is the number of
+            UTF-16 code units in the value. Empty strings cannot have spans.
+
+    Use :func:`arsc_writer.android_text` to decode Android text and calculate
+    spans automatically. Validation occurs when generating a resource table.
+
+    """
+
+    #: Already-decoded string content.
     value: str
+    #: Style tags with inclusive UTF-16 start and end offsets; empty by default.
     spans: tuple[tuple[str, int, int], ...] = ()
 
 
@@ -78,13 +94,36 @@ def _validate_no_nul(value: str) -> None:
 # Escaping and nested spans share the whitespace/quoting state.
 def android_text(value: str, *, markup: bool = False) -> Text:  # ruff: ignore[complex-structure, too-many-statements]
     """
-    Decode Android quoting/escapes and retain actual XML spans.
+    Decode Android quoting, escapes, and whitespace, retaining XML style spans.
 
-    Escaped HTML and CDATA are passed with markup=False, as literal text.
-    Malformed markup propagates lxml.etree.XMLSyntaxError from the XML parser.
-    Unlike AAPT2, unfinished quotes, trailing backslashes, and Unicode escapes
-    with fewer than four hexadecimal digits are rejected.
-    Literal and escaped NUL characters are also rejected.
+    With ``markup=True``, supported styles are ``b``, ``i``, ``u``, ``tt``,
+    ``big``, ``small``, ``sup``, ``sub``, ``strike``, ``li``, ``marquee``, ``font``,
+    ``a``, and ``annotation``. Style attributes use their local names even when
+    namespaced, matching AAPT2. XLIFF 1.2 ``g`` elements preserve text without
+    creating spans and cannot be nested. Comments and processing instructions
+    are ignored without interrupting text.
+
+    Apostrophes must be escaped with a backslash or enclosed in double-quoted
+    text. Styles whose contents normalize to empty text, including self-closing
+    styles, are rejected: Android can retain these for paragraph formatting,
+    so silently discarding them would change behavior. Empty XLIFF ``g`` elements
+    and unstyled empty strings are accepted.
+
+    Normalization follows AAPT2, except that unfinished quotes, trailing
+    backslashes, and Unicode escapes with fewer than four hexadecimal digits
+    are rejected to catch likely input mistakes. Literal and escaped NULs are
+    also rejected, avoiding AAPT2's UTF-8 truncation behavior. An escaped
+    backslash followed by ``u0000`` remains literal text and is accepted.
+
+    Like AAPT2, Unicode escapes in the surrogate range are discarded individually,
+    including escaped surrogate pairs. Use literal supplementary characters such
+    as ``😀`` instead; these are preserved and count as two UTF-16 code units.
+
+    Args:
+        value: An Android text fragment, not a complete resource XML document.
+        markup: Parse actual XML style elements into spans when true. Otherwise,
+            treat markup as literal text. Pass extracted CDATA or escaped HTML
+            with this option set to false.
 
     Returns:
         Decoded text and inclusive UTF-16 style spans.
@@ -92,8 +131,9 @@ def android_text(value: str, *, markup: bool = False) -> Text:  # ruff: ignore[c
     Raises:
         ValueError: An escape, quote, Unicode sequence, or span is invalid,
             or the text contains a NUL character.
+        lxml.etree.XMLSyntaxError: The XML fragment is malformed in markup mode.
 
-    """
+    """  # ruff: ignore[docstring-extraneous-exception]
     _validate_no_nul(value)
     output: list[str] = []
     spans: list[tuple[str, int, int]] = []
@@ -514,13 +554,36 @@ def generate(resources: ResourceTable, *, package: str, locale: str) -> bytes:
     """
     Serialize self-contained strings and plural bags with caller-assigned IDs.
 
+    Resource IDs and names are supplied by the caller, never allocated by this
+    function. NULs are rejected in string-pool contents, including direct
+    :class:`~arsc_writer.Text` values and span tags, and in package names to
+    prevent Android from silently truncating them.
+
+    Args:
+        resources (:py:data:`~arsc_writer.ResourceTable`): Mapping of unsigned
+            32-bit resource IDs to ``(name, value)`` pairs, with values described
+            by :py:data:`~arsc_writer.ResourceValue`.
+            IDs must match the consuming application and belong to one
+            package. Each resource kind uses one distinct, nonzero type ID;
+            names must be unique within a type, but strings and plurals may
+            share a name. Entry indices (the low 16 bits) cannot exceed
+            ``0xfffe``, because Android accepts at most 65,535 entries per type.
+        package: Android package name, supplied as a keyword argument.
+        locale: Android locale, such as ``fr``, ``pt-BR``, ``pt_BR``, ``pt-rBR``,
+            or ``b+sr+Latn+RS``, supplied as a keyword argument. Language, region,
+            script, and variant qualifiers are encoded. Each locale accepts at
+            most one region, script, and variant; repeated qualifiers, even
+            identical ones, are rejected. ASCII case variations are normalized:
+            languages and variants to lowercase, regions to uppercase, and
+            scripts to title case.
+
     Returns:
         A complete binary Android resource table.
 
     Raises:
         ValueError: Resources are empty or inconsistent, plural quantities are invalid,
-        a span is invalid, a string contains a NUL, the locale is unsupported,
-        or the package name contains a NUL or is too long.
+            a span is invalid, a string contains a NUL, the locale is unsupported,
+            or the package name contains a NUL or is too long.
 
     """
     if not resources:

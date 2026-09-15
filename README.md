@@ -34,75 +34,9 @@ resources: ResourceTable = {
 Path("fr.arsc").write_bytes(generate(resources, package="org.example.app", locale="fr"))
 ```
 
-`generate(resources, *, package, locale)` returns ARSC bytes. Pass `package` and
-`locale` as keyword arguments. The caller supplies
-resource IDs matching the consuming application's compiled IDs. Each mapping
-entry contains a resource name and either a `Text` or a plural-quantity mapping.
-All IDs must be unsigned 32-bit values and belong to one package; strings and
-plurals need distinct type IDs. Each kind must use exactly one type ID when
-present, and resource names must be unique within that type. Strings and plurals
-may share a resource name.
-Plural bags require `other` and accept `zero`, `one`, `two`, `few`, and `many`.
-Resource names and IDs are not allocated automatically.
-Entry indices (the low 16 bits of each ID) must not exceed `0xfffe`, because
-Android rejects type chunks with more than 65,535 entries.
-
-`Text(value, spans=())` contains already-decoded text. Each span is a tuple of
-`(tag, first, last)`, using UTF-16 code-unit offsets with an inclusive last index.
-`generate` rejects spans unless `0 <= first <= last < length`, where `length` is
-the number of UTF-16 code units in the value. Empty strings cannot have spans;
-overlapping and nested spans are supported.
-Prefer `android_text` when processing Android text, especially supplementary
-Unicode characters and nested styles.
-
-`android_text(value, markup=False)` decodes Android backslash escapes and quoting,
-and applies Android whitespace rules. With `markup=True`, actual XML elements
-become spans: `b`, `i`, `u`, `tt`, `big`, `small`, `sup`, `sub`, `strike`, `li`,
-`marquee`, `font`, `a`, and `annotation` are supported. Style attributes use their
-local names even when namespaced, matching AAPT2. XLIFF 1.2 `g` elements
-preserve their text without creating a span. Pass already-extracted CDATA or
-escaped-HTML text with `markup=False` to keep markup literal. This function
-accepts a text fragment, not an entire Android resource XML document.
-With `markup=True`, comments and processing instructions are ignored without
-interrupting text.
-XLIFF `g` elements cannot be nested. Apostrophes must be escaped with a backslash
-or enclosed in double-quoted text.
-Style elements whose contents normalize to empty text raise `ValueError`,
-including self-closing styles. Android can retain these empty styles and apply
-paragraph formatting, so they are rejected rather than silently discarded.
-Empty XLIFF `g` elements and unstyled empty strings are accepted.
-
-Text normalization follows AAPT2, but intentionally rejects unterminated quotes,
-trailing backslashes, and Unicode escapes with fewer than four hexadecimal digits.
-For example, AAPT2 accepts `"open` as `open`, drops the final backslash in
-`trailing\`, and interprets `\u123` as `ģ` (U+0123). `android_text` raises
-`ValueError` for all three, with either markup mode, to catch likely input mistakes.
-
-`android_text` also rejects literal NUL characters and `\u0000` escapes with
-`ValueError`. `generate` rejects NULs in string-pool contents, including direct
-`Text` values and span tags. This avoids differing from AAPT2's default UTF-8
-output, which replaces characters after the first NUL with additional NULs.
-An escaped backslash followed by `u0000` remains literal text and is accepted.
-Package names also reject NULs to prevent Android from silently truncating them.
-
-Like AAPT2, `android_text` discards Unicode escapes in the surrogate range
-(`\uD800`–`\uDFFF`) individually, including escaped surrogate pairs. Use literal
-supplementary Unicode characters such as `😀` instead; these are preserved and
-count as two UTF-16 code units in span offsets.
-
-Locale forms include `fr`, `pt-BR`, `pt_BR`, `pt-rBR`, and `b+sr+Latn+RS`;
-language, region, script, and variant qualifiers are encoded. Each locale may
-contain at most one region, one script, and one variant; repeated qualifiers,
-including identical repetitions, raise `ValueError`. ASCII case variations
-are accepted: languages and variants are normalized to lowercase, regions to
-uppercase, and scripts to title case. Unsupported
-qualifiers, malformed quoting or escapes, and inconsistent resource tables
-raise `ValueError`; malformed XML raises `lxml.etree.XMLSyntaxError`.
-
-The package-root API exports `Text`, `ResourceValue`, `ResourceTable`,
-`android_text`, and `generate`. Binary-format helpers in `writer.py` are internal.
-Only strings and plurals are supported; this library does not generate APKs or
-other Android resource types.
+See the [user guide and API reference](https://arsc-writer.readthedocs.io/)
+for resource IDs, text normalization, styles, locales, and validation.
+The documentation sources are in [docs/](docs/).
 
 ## Development
 
@@ -129,6 +63,18 @@ CI tests the built wheel and source distribution using the
 [Python test matrix](.github/workflows/test.yml).
 These checks run outside the checkout, without an editable installation or
 `PYTHONPATH` override.
+
+### Documentation
+
+Build the English HTML documentation locally:
+
+```sh
+uv run --locked --group docs sphinx-build -n -W --keep-going -b html docs docs/_build/html
+```
+
+Open `docs/_build/html/index.html` to read the result. Sphinx imports the installed
+package to build the API reference. The documentation dependencies are included
+in the development group. Read the Docs and CI use the same locked dependencies.
 
 ## Android verification
 
@@ -177,7 +123,7 @@ waits for all Python distribution tests and Android verification to pass. Tags m
 
 Tags in `WeblateOrg/arsc-writer` also publish to PyPI and create GitHub
 releases with generated release notes. Before tagging a release, update the
-version in `pyproject.toml` and the changelog, and configure a PyPI trusted
+version in `pyproject.toml` and the [changelog](docs/changes.rst), and configure a PyPI trusted
 publisher for owner `WeblateOrg`, repository `arsc-writer`, and workflow
 `setup.yml` without an environment name.
 
