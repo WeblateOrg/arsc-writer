@@ -5,6 +5,7 @@ requires = ["uv_build>=0.12.13,<0.13"]
 [dependency-groups]
 dev = [
   { include-group = "dist" },
+  { include-group = "docs" },
   { include-group = "lint" },
   { include-group = "test" },
   { include-group = "types" }
@@ -15,6 +16,10 @@ dist = [
   "pydistcheck==0.11.3",
   "pyroma==5.0.1",
   "twine==7.0.0"
+]
+docs = [
+  "furo==2025.12.19",
+  "Sphinx==8.2.3"
 ]
 lint = [
   { include-group = "pre-commit" }
@@ -28,7 +33,8 @@ test = [
 types = [
   "mypy==2.3.1",
   "ty==0.0.81",
-  "types-lxml==2026.2.16"
+  "types-lxml==2026.2.16",
+  { include-group = "docs" }
 ]
 
 [project]
@@ -59,7 +65,8 @@ requires-python = ">=3.12"
 version = "0.1.0.dev0"
 
 [project.urls]
-Documentation = "https://github.com/WeblateOrg/arsc-writer#readme"
+Changelog = "https://arsc-writer.readthedocs.io/en/latest/changes.html"
+Documentation = "https://arsc-writer.readthedocs.io/"
 Funding = "https://weblate.org/donate/"
 Homepage = "https://github.com/WeblateOrg/arsc-writer"
 "Issue Tracker" = "https://github.com/WeblateOrg/arsc-writer/issues"
@@ -70,6 +77,7 @@ ignore = [
   ".editorconfig",
   ".github/**",
   ".pre-commit-config.yaml",
+  ".readthedocs.yml",
   ".yamllint.yml",
   "AGENTS.md",
   "ci/**",
@@ -111,6 +119,10 @@ notice-rgx = "(?i)Copyright\\s+©\\s+"
 "ci/android-arsc/*.py" = [
   "implicit-namespace-package"
 ]
+# Sphinx loads its configuration as a standalone module.
+"docs/conf.py" = [
+  "implicit-namespace-package"
+]
 # Binary-format widths and sentinels are kept beside their encodings.
 "src/arsc_writer/writer.py" = [
   "magic-value-comparison"
@@ -146,4 +158,5 @@ sort_table_keys = true
 spaces_before_inline_comment = 2
 
 [tool.uv.build-backend]
-source-include = ["CHANGES.md", "SECURITY.md", "tests/**"]
+source-exclude = ["docs/_build/**"]
+source-include = ["docs/**", "SECURITY.md", "tests/**"]

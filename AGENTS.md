@@ -46,7 +46,7 @@ and include `Fixes #123` when applicable.
 
 Keep pull requests focused. Describe changes and addressed issues, report
 validation, and document new behavior in `README.md` and relevant release
-changes in `CHANGES.md`.
+changes in `docs/changes.rst`.
 
 ## Shared files and security
 
