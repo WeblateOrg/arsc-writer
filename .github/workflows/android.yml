@@ -32,7 +32,7 @@ jobs:
         python-version: '3.14'
     - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
       with:
-        version: 0.12.17
+        version: 0.12.19
         cache-suffix: android
         save-cache: ${{ github.ref == 'refs/heads/main' }}
     - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
