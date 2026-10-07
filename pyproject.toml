@@ -32,7 +32,7 @@ test = [
 ]
 types = [
   "mypy==2.4.0",
-  "ty==0.0.84",
+  "ty==0.0.85",
   "types-lxml==2026.2.16",
   { include-group = "docs" }
 ]
