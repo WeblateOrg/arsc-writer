@@ -13,25 +13,31 @@ jobs:
     strategy:
       matrix:
         os:
-        - ubuntu-24.04
-        - windows-2025
-        - macos-15
+        - ubuntu-26.04
         artifact: [whl]
         python-version:
         - '3.12'
         - '3.13'
         - '3.14'
-        exclude:
-        - os: windows-2025
-          python-version: '3.13'
-        - os: macos-15
-          python-version: '3.13'
+        - '3.15'
         include:
-        - os: ubuntu-24.04
+        - os: windows-2025
+          python-version: '3.12'
+          artifact: whl
+        - os: macos-15
+          python-version: '3.12'
+          artifact: whl
+        - os: windows-2025
+          python-version: '3.15'
+          artifact: whl
+        - os: macos-15
+          python-version: '3.15'
+          artifact: whl
+        - os: ubuntu-26.04
           python-version: '3.12'
           artifact: tar.gz
-        - os: ubuntu-24.04
-          python-version: '3.14'
+        - os: ubuntu-26.04
+          python-version: '3.15'
           artifact: tar.gz
     name: ${{ matrix.os }}, Python ${{ matrix.python-version }}, ${{ matrix.artifact }}
 
