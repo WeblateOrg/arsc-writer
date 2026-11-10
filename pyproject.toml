@@ -20,7 +20,7 @@ dist = [
 docs = [
   # Do not attempt to build doc on older Python
   "furo==2025.12.19; python_version >= '3.14'",
-  "Sphinx==9.1.1; python_version >= '3.14'"
+  "Sphinx==9.2.0; python_version >= '3.14'"
 ]
 lint = [
   { include-group = "pre-commit" }
