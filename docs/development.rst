@@ -125,11 +125,11 @@ Build and validate the wheel and source distribution:
 .. code-block:: console
 
     uv build --no-sources
-    uv run --locked twine check dist/*
-    uv run --locked pydistcheck --inspect dist/*
-    uv run --locked pyroma dist/*.tar.gz
-    uv run --locked check-wheel-contents dist/*.whl
-    uv run --locked check-manifest -v
+    uv run --frozen --only-group dist twine check dist/*
+    uv run --frozen --only-group dist pydistcheck --inspect dist/*
+    uv run --frozen --only-group dist pyroma dist/*.tar.gz
+    uv run --frozen --only-group dist check-wheel-contents dist/*.whl
+    uv run --frozen --only-group dist check-manifest -v
 
 The distribution workflow builds and validates packages on pushes to ``main``,
 release tags, and pull requests. ``uv build`` builds the wheel from the source
@@ -144,7 +144,7 @@ and include a nonempty description of the changes. Missing, duplicate, or empty
 release sections block publishing. Before tagging a release, update the
 version in ``pyproject.toml`` and the :doc:`changes`, and configure a PyPI trusted
 publisher for owner ``WeblateOrg``, repository ``arsc-writer``, and workflow
-``setup.yml`` without an environment name.
+``setup.yml`` with environment ``pypi``.
 
 Shared project files and security
 ---------------------------------
