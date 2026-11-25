@@ -1,7 +1,7 @@
 // Copyright © Michal Čihař <michal@weblate.org>
 // SPDX-License-Identifier: MIT
 plugins {
-    id 'com.android.application' version '9.5.2'
+    id 'com.android.application' version '9.5.3'
 }
 android {
     namespace = 'org.weblate.arsctest'
